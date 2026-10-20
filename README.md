@@ -112,14 +112,17 @@ This latency in risk awareness complicates proactive decision-making and leads t
 * **Disclaimer:** Includes standard warranty disclaimers stating that the software is provided "AS IS", without warranty of any kind.
 
 ### 10. System Architecture Diagram Document Link
+* **Exported Architecture PDF (Local File):** [`reports/system_architecture_diagram.pdf`](reports/system_architecture_diagram.pdf) *(17x11" Landscape Vector Diagram)*
 * **Mermaid Source File (Repository):** [`reports/system_architecture.mmd`](reports/system_architecture.mmd)
 * **Technical Architecture Specification (Repository):** [`reports/system_architecture.md`](reports/system_architecture.md)
-* **External PDF/PPT Link:** `[Insert Architecture Diagram PDF/PPT Link (e.g., Google Drive / GitHub Releases)]`
+* **External PDF/PPT Link (Cloud):** `[Insert Architecture Diagram PDF/PPT Link (e.g., Google Drive / GitHub Releases)]`
 
 ### 11. Project Presentation Document Link
-* **Presentation Format:** Slide Deck (PDF / PPT / PPTX)
+* **Presentation Format:** 12-Slide Professional Slide Deck (16:9 Widescreen)
 * **Slide Deck Title:** TwinSense AI: Predictive Healthcare Digital Twin Prototype
-* **External PDF/PPT Link:** `[Insert Project Presentation PDF/PPT Link (e.g., Google Drive / GitHub Releases)]`
+* **Editable PowerPoint (Local File):** [`reports/TwinSense_AI_Presentation.pptx`](reports/TwinSense_AI_Presentation.pptx)
+* **Presentation PDF (Local File):** [`reports/TwinSense_AI_Presentation.pdf`](reports/TwinSense_AI_Presentation.pdf)
+* **External PDF/PPT Link (Cloud):** `[Insert Project Presentation PDF/PPT Link (e.g., Google Drive / GitHub Releases)]`
 
 ### 12. Public Accessibility Verification Checklist
 Before submitting, verify that all external links comply with the submission guidelines:
@@ -424,9 +427,9 @@ Hyper (3)        0           211          1,953
 | Required Submission Item | Current Status | Location / Artifact Path | Action Required Prior to Final Submission |
 | :--- | :---: | :--- | :--- |
 | **1. Open-Source License** | ✅ **EXISTS** | [`LICENSE`](LICENSE) (MIT License) | None; fully configured and active. |
-| **2. Architecture Specification** | ✅ **EXISTS** | [`reports/system_architecture.md`](reports/system_architecture.md) & [`.mmd`](reports/system_architecture.mmd) | Export diagram to PDF/PPT slide format and update link in Section 10. |
-| **3. Architecture PDF/PPT** | ⚠️ **MISSING** | Needs to be generated | Save architecture diagram as PDF/PPT, upload to public drive, insert link. |
-| **4. Project Presentation PDF/PPT** | ⚠️ **MISSING** | Needs to be created | Prepare slide deck summarizing problem, architecture, ML results, and upload to public drive. |
+| **2. Architecture Specification** | ✅ **EXISTS** | [`reports/system_architecture.md`](reports/system_architecture.md) & [`.mmd`](reports/system_architecture.mmd) | Complete technical specification and Mermaid source code. |
+| **3. Architecture PDF Diagram** | ✅ **EXISTS** | [`reports/system_architecture_diagram.pdf`](reports/system_architecture_diagram.pdf) | Generated 17x11" vector PDF diagram ready for submission. |
+| **4. Project Presentation (PPTX/PDF)** | ✅ **EXISTS** | [`reports/TwinSense_AI_Presentation.pptx`](reports/TwinSense_AI_Presentation.pptx) & [`.pdf`](reports/TwinSense_AI_Presentation.pdf) | 12-slide presentation in both editable PowerPoint and PDF formats. |
 | **5. Unlisted YouTube Demo Video** | ⚠️ **MISSING** | Needs to be recorded | Record 15–20 minute walkthrough, upload to YouTube as Unlisted, insert link in Section 8. |
 | **6. Team & College Placeholders** | ⚠️ **ACTION REQ.** | Section 1 & Section 2 of this README | Fill in actual names, college/incubator names, and contact details. |
 
