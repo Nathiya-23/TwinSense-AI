@@ -427,7 +427,7 @@ Hyper (3)        0           211          1,953
 | **2. Architecture Specification** | ✅ **EXISTS** | [`reports/system_architecture.md`](reports/system_architecture.md) & [`.mmd`](reports/system_architecture.mmd) | Export diagram to PDF/PPT slide format and update link in Section 10. |
 | **3. Architecture PDF/PPT** | ⚠️ **MISSING** | Needs to be generated | Save architecture diagram as PDF/PPT, upload to public drive, insert link. |
 | **4. Project Presentation PDF/PPT** | ⚠️ **MISSING** | Needs to be created | Prepare slide deck summarizing problem, architecture, ML results, and upload to public drive. |
-| **5. Unlisted YouTube Demo Video** | https://youtu.be/rW0ezS9FJXc | Needs to be recorded | Record 15–20 minute walkthrough, upload to YouTube as Unlisted, insert link in Section 8. |
+| **5. Unlisted YouTube Demo Video** | ✅ **EXISTS** | https://youtu.be/rW0ezS9FJXc | Record 15–20 minute walkthrough, upload to YouTube as Unlisted, insert link in Section 8. |
 | **6. Team & College Placeholders** | ⚠️ **ACTION REQ.** | Section 1 & Section 2 of this README | Fill in actual names, college/incubator names, and contact details. |
 
 ---
