@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TwinSense AI — Create your Healthcare Digital Twin account.">
+    <meta name="theme-color" content="#090617">
+    <title>Create Account | TwinSense AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<main class="auth-page" role="main">
+
+    <!-- Brand -->
+    <div class="auth-brand" aria-label="TwinSense AI brand">
+        <div class="auth-brand-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+            </svg>
+        </div>
+        <span class="auth-brand-title">TwinSense AI</span>
+        <span class="auth-brand-tagline">Healthcare Digital Twin &bull; Glucose Risk Analytics</span>
+    </div>
+
+    <!-- Register card -->
+    <div class="auth-card" role="region" aria-label="Create account form">
+        <h1 class="auth-card-title">Create account</h1>
+        <p class="auth-card-subtitle">Join TwinSense AI to access the synthetic patient dashboard.</p>
+
+        <!-- Global error banner -->
+        <div class="auth-error-banner" id="reg-error-banner" role="alert" aria-live="polite">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span id="reg-error-text">An error occurred.</span>
+        </div>
+
+        <!-- Success banner -->
+        <div class="auth-success-banner" id="reg-success-banner" role="status" aria-live="polite">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            <span id="reg-success-text">Account created! Signing you in&hellip;</span>
+        </div>
+
+        <form class="auth-form" id="register-form" novalidate autocomplete="on">
+            <!-- Full name -->
+            <div class="auth-field">
+                <label class="auth-label" for="reg-name">Full name</label>
+                <div class="auth-input-wrap">
+                    <input
+                        class="auth-input"
+                        type="text"
+                        id="reg-name"
+                        name="full_name"
+                        autocomplete="name"
+                        placeholder="Jane Smith"
+                        required
+                        aria-required="true"
+                        aria-describedby="reg-name-error"
+                        minlength="2"
+                        maxlength="100"
+                    >
+                </div>
+                <span class="auth-field-error" id="reg-name-error" role="alert">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <span>Full name must be at least 2 characters.</span>
+                </span>
+            </div>
+
+            <!-- Email -->
+            <div class="auth-field">
+                <label class="auth-label" for="reg-email">Email address</label>
+                <div class="auth-input-wrap">
+                    <input
+                        class="auth-input"
+                        type="email"
+                        id="reg-email"
+                        name="email"
+                        autocomplete="email"
+                        placeholder="you@example.com"
+                        required
+                        aria-required="true"
+                        aria-describedby="reg-email-error"
+                    >
+                </div>
+                <span class="auth-field-error" id="reg-email-error" role="alert">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <span>Please enter a valid email address.</span>
+                </span>
+            </div>
+
+            <!-- Password -->
+            <div class="auth-field">
+                <label class="auth-label" for="reg-password">Password</label>
+                <div class="auth-input-wrap">
+                    <input
+                        class="auth-input has-toggle"
+                        type="password"
+                        id="reg-password"
+                        name="password"
+                        autocomplete="new-password"
+                        placeholder="Minimum 8 characters"
+                        required
+                        aria-required="true"
+                        aria-describedby="reg-password-error reg-pw-hint"
+                        minlength="8"
+                    >
+                    <button
+                        type="button"
+                        class="auth-toggle-btn"
+                        id="reg-pw-toggle"
+                        aria-label="Show password"
+                        aria-controls="reg-password"
+                        aria-pressed="false"
+                    >
+                        <svg id="reg-eye-show" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                        </svg>
+                        <svg id="reg-eye-hide" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                            <line x1="1" y1="1" x2="23" y2="23"/>
+                        </svg>
+                    </button>
+                </div>
+                <span class="auth-field-error" id="reg-password-error" role="alert">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <span>Password must be at least 8 characters with letters and numbers.</span>
+                </span>
+                <p class="auth-pw-hint" id="reg-pw-hint">Minimum 8 characters, including at least one letter and one number.</p>
+            </div>
+
+            <!-- Confirm password -->
+            <div class="auth-field">
+                <label class="auth-label" for="reg-confirm">Confirm password</label>
+                <div class="auth-input-wrap">
+                    <input
+                        class="auth-input has-toggle"
+                        type="password"
+                        id="reg-confirm"
+                        name="confirm_password"
+                        autocomplete="new-password"
+                        placeholder="Re-enter your password"
+                        required
+                        aria-required="true"
+                        aria-describedby="reg-confirm-error"
+                    >
+                    <button
+                        type="button"
+                        class="auth-toggle-btn"
+                        id="reg-confirm-toggle"
+                        aria-label="Show confirm password"
+                        aria-controls="reg-confirm"
+                        aria-pressed="false"
+                    >
+                        <svg id="reg-eye-show2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                        </svg>
+                        <svg id="reg-eye-hide2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                            <line x1="1" y1="1" x2="23" y2="23"/>
+                        </svg>
+                    </button>
+                </div>
+                <span class="auth-field-error" id="reg-confirm-error" role="alert">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <span>Passwords do not match. Please re-enter.</span>
+                </span>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="auth-btn-primary" id="reg-submit-btn">
+                Create Account
+            </button>
+        </form>
+
+        <div class="auth-nav-footer">
+            Already have an account?
+            <a href="/login" class="auth-nav-link" id="reg-login-link">Sign in</a>
+        </div>
+    </div>
+
+    <!-- Prototype disclaimer -->
+    <p class="auth-disclaimer">
+        ⚠️ TwinSense AI is an educational prototype using synthetic data. Not for clinical use.
+        Your account is stored locally only and does not represent a medical identity.
+    </p>
+
+</main>
+
+<script>
+(function () {
+    "use strict";
+
+    var form = document.getElementById("register-form");
+    var nameInput = document.getElementById("reg-name");
+    var emailInput = document.getElementById("reg-email");
+    var passwordInput = document.getElementById("reg-password");
+    var confirmInput = document.getElementById("reg-confirm");
+    var submitBtn = document.getElementById("reg-submit-btn");
+
+    var errorBanner = document.getElementById("reg-error-banner");
+    var errorText = document.getElementById("reg-error-text");
+    var successBanner = document.getElementById("reg-success-banner");
+
+    var nameError = document.getElementById("reg-name-error");
+    var emailError = document.getElementById("reg-email-error");
+    var passwordError = document.getElementById("reg-password-error");
+    var confirmError = document.getElementById("reg-confirm-error");
+
+    // Password toggles
+    function makeToggle(inputEl, btn, show, hide) {
+        btn.addEventListener("click", function () {
+            var isText = inputEl.type === "text";
+            inputEl.type = isText ? "password" : "text";
+            btn.setAttribute("aria-label", isText ? "Show password" : "Hide password");
+            btn.setAttribute("aria-pressed", String(!isText));
+            show.style.display = isText ? "" : "none";
+            hide.style.display = isText ? "none" : "";
+        });
+    }
+    makeToggle(passwordInput, document.getElementById("reg-pw-toggle"), document.getElementById("reg-eye-show"), document.getElementById("reg-eye-hide"));
+    makeToggle(confirmInput, document.getElementById("reg-confirm-toggle"), document.getElementById("reg-eye-show2"), document.getElementById("reg-eye-hide2"));
+
+    function showGlobalError(msg) {
+        errorText.textContent = msg;
+        errorBanner.classList.add("visible");
+        successBanner.classList.remove("visible");
+    }
+
+    function hideGlobalError() {
+        errorBanner.classList.remove("visible");
+    }
+
+    function setFieldError(input, errorEl, msg) {
+        input.classList.add("input-error");
+        errorEl.querySelector("span:last-child").textContent = msg;
+        errorEl.classList.add("visible");
+    }
+
+    function clearFieldError(input, errorEl) {
+        input.classList.remove("input-error");
+        errorEl.classList.remove("visible");
+    }
+
+    // Live clear on input
+    nameInput.addEventListener("input", function () { clearFieldError(nameInput, nameError); hideGlobalError(); });
+    emailInput.addEventListener("input", function () { clearFieldError(emailInput, emailError); hideGlobalError(); });
+    passwordInput.addEventListener("input", function () { clearFieldError(passwordInput, passwordError); hideGlobalError(); });
+    confirmInput.addEventListener("input", function () { clearFieldError(confirmInput, confirmError); hideGlobalError(); });
+
+    function validateClient() {
+        var ok = true;
+
+        var nameVal = nameInput.value.trim();
+        if (!nameVal || nameVal.length < 2) {
+            setFieldError(nameInput, nameError, "Full name must be at least 2 characters.");
+            ok = false;
+        }
+
+        var emailVal = emailInput.value.trim();
+        if (!emailVal) {
+            setFieldError(emailInput, emailError, "Email address is required.");
+            ok = false;
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+            setFieldError(emailInput, emailError, "Please enter a valid email address.");
+            ok = false;
+        }
+
+        var pwVal = passwordInput.value;
+        if (!pwVal || pwVal.length < 8) {
+            setFieldError(passwordInput, passwordError, "Password must be at least 8 characters.");
+            ok = false;
+        } else if (!/[a-zA-Z]/.test(pwVal) || !/[0-9]/.test(pwVal)) {
+            setFieldError(passwordInput, passwordError, "Password must contain at least one letter and one number.");
+            ok = false;
+        }
+
+        var confirmVal = confirmInput.value;
+        if (!confirmVal) {
+            setFieldError(confirmInput, confirmError, "Please confirm your password.");
+            ok = false;
+        } else if (pwVal && confirmVal !== pwVal) {
+            setFieldError(confirmInput, confirmError, "Passwords do not match. Please re-enter.");
+            ok = false;
+        }
+
+        return ok;
+    }
+
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        hideGlobalError();
+
+        if (!validateClient()) return;
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="btn-spinner" aria-hidden="true"></span>Creating account\u2026';
+
+        try {
+            var response = await fetch("/api/auth/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    full_name: nameInput.value.trim(),
+                    email: emailInput.value.trim(),
+                    password: passwordInput.value,
+                    confirm_password: confirmInput.value
+                }),
+                credentials: "same-origin"
+            });
+
+            var data = await response.json().catch(function () { return {}; });
+
+            if (response.ok) {
+                successBanner.classList.add("visible");
+                submitBtn.textContent = "Account Created!";
+                // Auto-redirect to dashboard (session cookie is already set by register endpoint)
+                setTimeout(function () { window.location.href = "/"; }, 900);
+            } else {
+                var msg = (data && data.detail) ? data.detail : "Registration failed. Please check your details.";
+                showGlobalError(msg);
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Create Account";
+            }
+        } catch (err) {
+            showGlobalError("Network error. Please check your connection and try again.");
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Create Account";
+        }
+    });
+
+})();
+</script>
+</body>
+</html>

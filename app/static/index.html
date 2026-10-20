@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TwinSense AI — Healthcare Digital Twin Dashboard for 45-minute glucose risk analytics. Synthetic prototype for student innovation challenge.">
+    <meta name="theme-color" content="#090617">
+    <title>TwinSense AI | Healthcare Digital Twin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Top System Header -->
+    <header class="top-header">
+        <div class="header-container">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                    </svg>
+                </div>
+                <div class="brand-titles">
+                    <h1>TwinSense AI</h1>
+                    <span class="brand-tagline">Healthcare Digital Twin &bull; Glucose Risk Analytics</span>
+                </div>
+            </div>
+
+            <div class="system-status-pills">
+                <div class="status-pill status-healthy" id="system-health-pill">
+                    <span class="status-dot"></span>
+                    <span id="health-status-text">Backend: Connecting...</span>
+                </div>
+                <div class="status-pill status-neutral" id="model-status-pill">
+                    <span class="model-badge">AI Model:</span>
+                    <span id="model-status-text">Random Forest Active</span>
+                </div>
+                <div class="status-pill status-prototype">
+                    <span class="badge-icon">⚠️</span>
+                    <span>Synthetic Prototype</span>
+                </div>
+                <!-- User profile pill + logout (populated by app.js after /api/auth/me) -->
+                <div class="user-pill" id="user-header-pill" aria-label="Signed-in user" style="display:none">
+                    <div class="user-pill-avatar" id="user-avatar-initials" aria-hidden="true">??</div>
+                    <span class="user-pill-name" id="user-display-name">User</span>
+                    <svg class="user-pill-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="16 12 12 8 8 12"/><line x1="12" y1="16" x2="12" y2="8"/></svg>
+                </div>
+                <button class="btn-logout" id="btn-logout" type="button" aria-label="Log out" style="display:none">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    Sign out
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Prominent Warning Banner Below Header -->
+    <div class="disclaimer-banner" role="alert" aria-label="Hypoglycemia Warning and Prototype Disclaimers">
+        <div class="disclaimer-container">
+            <div class="banner-warning-box">
+                <div class="banner-warning-header">
+                    <span class="warning-badge-tag">CRITICAL MODEL LIMITATION</span>
+                    <span class="warning-banner-icon">⚠️</span>
+                    <strong class="warning-banner-title" id="banner-warning-title">HYPOGLYCEMIA PREDICTION UNSUPPORTED</strong>
+                </div>
+                <p class="warning-banner-text" id="banner-warning-text">
+                    Hypoglycemia prediction is not supported by the current model. The underlying model has zero hypoglycemia training examples (Class 1) and cannot detect or rule out hypoglycemia. A 0% probability output must never be displayed or interpreted as proof that hypoglycemia cannot happen.
+                </p>
+                <div class="banner-disclaimer-sub">
+                    <span><strong>HONEST PROTOTYPE DISCLAIMER:</strong> TwinSense AI is an educational prototype using synthetic data. It has not been clinically validated and is not intended for diagnosis, treatment, or emergency monitoring. Never use this prototype to guide insulin titration or medical decisions.</span>
+                    <span class="disclaimer-alert-tag">Educational Prototype &bull; Non-Clinical</span>
+                </div>
+            </div>
+            <!-- Emergency Notice Banner -->
+            <div class="banner-emergency-box" role="alert">
+                <span class="emergency-tag">🚨 EMERGENCY NOTICE</span>
+                <span class="emergency-text">
+                    If the patient reports or experiences severe symptoms or an emergency, <strong>seek emergency medical help immediately</strong>. Never allow a reassuring AI result to override dangerous symptoms or concerning actual readings.
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application Container -->
+    <main class="main-container">
+        <!-- Overview KPI Stats Bar -->
+        <section class="overview-grid" aria-label="System Metrics Overview">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Synthetic Cohort</span>
+                    <span class="stat-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </span>
+                </div>
+                <div class="stat-value" id="stat-total-patients">--</div>
+                <div class="stat-subtext">Deterministic simulated profiles</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Active Digital Twin</span>
+                    <span class="stat-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                        </svg>
+                    </span>
+                </div>
+                <div class="stat-value text-accent" id="stat-active-patient">SYNTH_PAT_001</div>
+                <div class="stat-subtext" id="stat-patient-type">Loading baseline...</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Actual Measured Glucose</span>
+                    <span class="stat-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+                        </svg>
+                    </span>
+                </div>
+                <div class="stat-value" id="stat-current-glucose">-- <span class="unit">mg/dL</span></div>
+                <div class="stat-subtext" id="stat-latest-timestamp">Latest reading: --</div>
+                <div class="stat-badge-row">
+                    <span id="kpi-glucose-caution" class="kpi-caution-tag hidden">⚠️ Outside Target (70–180)</span>
+                    <span id="kpi-stale-tag" class="stale-badge hidden">⚠️ OUTDATED</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">45-Min Forward Forecast</span>
+                    <span class="stat-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                        </svg>
+                    </span>
+                </div>
+                <div class="stat-value" id="stat-current-risk">
+                    <span class="risk-badge risk-pending">Awaiting Run</span>
+                </div>
+                <div class="stat-subtext">Estimated trajectory &bull; Not a guarantee</div>
+            </div>
+        </section>
+
+        <!-- Main Analytics Workspace -->
+        <div class="workspace-grid">
+            <!-- Left Column: Patient Profile & Dynamic Telemetry Stream -->
+            <div class="workspace-col col-left">
+                <!-- Patient Selector & Profile Card -->
+                <section class="card patient-card" aria-labelledby="patient-card-title">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <h2 id="patient-card-title" class="card-title">Patient Profile (Baseline EHR)</h2>
+                            <p class="card-subtitle">Static demographic and physiological records</p>
+                        </div>
+                        <div class="patient-selector-wrapper">
+                            <label for="patient-select" class="visually-hidden">Select Patient</label>
+                            <select id="patient-select" class="select-control" aria-label="Select Patient">
+                                <option value="" disabled selected>Loading patients...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Profile Metadata Grid -->
+                    <div class="profile-details-grid" id="profile-details-grid">
+                        <div class="profile-field">
+                            <span class="field-label">
+                                <svg class="field-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                Age
+                            </span>
+                            <span class="field-value" id="profile-age">--</span>
+                        </div>
+                        <div class="profile-field">
+                            <span class="field-label">
+                                <svg class="field-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                                Body Mass Index (BMI)
+                            </span>
+                            <span class="field-value" id="profile-bmi">--</span>
+                        </div>
+                        <div class="profile-field">
+                            <span class="field-label">
+                                <svg class="field-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                                Diabetes Type
+                            </span>
+                            <span class="field-value" id="profile-type">--</span>
+                        </div>
+                        <div class="profile-field">
+                            <span class="field-label">
+                                <svg class="field-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+                                Baseline HbA1c
+                            </span>
+                            <span class="field-value" id="profile-hba1c">--</span>
+                        </div>
+                        <div class="profile-field">
+                            <span class="field-label">
+                                <svg class="field-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 8 14"/></svg>
+                                Diabetes Duration
+                            </span>
+                            <span class="field-value" id="profile-duration">--</span>
+                        </div>
+                        <div class="profile-field">
+                            <span class="field-label">
+                                <svg class="field-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                                Data Source
+                            </span>
+                            <span class="field-value text-muted" id="profile-source">Synthetic Simulation</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Rule-based Low Glucose Safety Alert Banner (Requirement 4) -->
+                <div class="low-glucose-alert-banner hidden" id="low-glucose-alert-banner" role="alert" aria-label="Low Glucose Safety Alert">
+                    <div class="low-glucose-alert-header">
+                        <span class="low-glucose-alert-icon">🚨</span>
+                        <strong class="low-glucose-alert-title">LOW GLUCOSE SAFETY ALERT (MEASURED READING)</strong>
+                    </div>
+                    <p class="low-glucose-alert-text" id="low-glucose-alert-text">
+                        Low glucose reading: the measured value of -- mg/dL (at --) is below 70 mg/dL. This alert is based on the measured reading, not the ML prediction. This is synthetic data. If this were a real reading, follow your clinician's guidance and seek medical help if you have symptoms.
+                    </p>
+                </div>
+
+                <!-- Wearable CGM Telemetry Chart Card (Simulated Historical Data) -->
+                <section class="card chart-card" aria-labelledby="chart-card-title">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <div class="card-title-badge-row">
+                                <h2 id="chart-card-title" class="card-title">Simulated Historical Glucose Timeline</h2>
+                                <span class="history-badge">Simulated Historical Data</span>
+                            </div>
+                            <p class="card-subtitle">Historical CGM telemetry sampled at 5-minute intervals &bull; Not real-time monitoring</p>
+                        </div>
+                        <div class="chart-controls">
+                            <label for="chart-readings-limit" class="visually-hidden">Select Window</label>
+                            <select id="chart-readings-limit" class="select-control select-sm">
+                                <option value="24">Last 2 Hours (24 pts)</option>
+                                <option value="48" selected>Last 4 Hours (48 pts)</option>
+                                <option value="72">Last 6 Hours (72 pts)</option>
+                            </select>
+                            <button id="btn-refresh-telemetry" class="btn btn-secondary btn-sm" title="Refresh Telemetry">
+                                ↻ Refresh
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Reference Thresholds Legend -->
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <span class="legend-line line-cgm"></span>
+                            <span>CGM Glucose (mg/dL)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-zone zone-target"></span>
+                            <span>Target Band (70 - 180 mg/dL)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-line line-threshold-high"></span>
+                            <span>Hyperglycemia (&gt;180)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-line line-threshold-low"></span>
+                            <span>Hypoglycemia (&lt;70)</span>
+                        </div>
+                    </div>
+
+                    <!-- Native Responsive SVG Chart Container -->
+                    <div class="chart-container" id="chart-wrapper">
+                        <svg id="cgm-svg-chart" viewBox="0 0 700 280" preserveAspectRatio="none" aria-label="Glucose timeline chart">
+                            <!-- Populated dynamically via app.js -->
+                        </svg>
+                        <div id="chart-tooltip" class="chart-tooltip hidden" role="tooltip"></div>
+                        <div id="chart-loading-overlay" class="chart-overlay hidden">
+                            <div class="spinner"></div>
+                            <span>Loading Simulated Telemetry...</span>
+                        </div>
+                    </div>
+
+                    <div class="chart-footer-metrics">
+                        <div class="metric-pill">
+                            <span class="metric-icon">❤️</span>
+                            <span class="metric-label">Avg Heart Rate:</span>
+                            <span class="metric-val" id="avg-heart-rate">-- bpm</span>
+                        </div>
+                        <div class="metric-pill">
+                            <span class="metric-icon">👟</span>
+                            <span class="metric-label">Recent Steps:</span>
+                            <span class="metric-val" id="sum-steps">-- steps</span>
+                        </div>
+                        <div class="metric-pill">
+                            <span class="metric-icon">🍽️</span>
+                            <span class="metric-label">Meal Ingestion:</span>
+                            <span class="metric-val" id="meal-status-flag">None</span>
+                        </div>
+                    </div>
+
+                    <p class="chart-disclaimer-note">
+                        *Reference thresholds (70 &amp; 180 mg/dL) reflect standard clinical guidelines for diabetes target ranges. They are displayed for general reference and are not individualized medical prescriptions.
+                    </p>
+                </section>
+            </div>
+
+            <!-- Right Column: Digital Twin Prediction, What-If Simulation, History -->
+            <div class="workspace-col col-right">
+                <!-- Digital Twin 45-Min Forward Forecast Panel -->
+                <section class="card prediction-card" aria-labelledby="prediction-title">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <h2 id="prediction-title" class="card-title">Digital Twin 45-Min Risk Forecast</h2>
+                            <p class="card-subtitle">Fused Static EHR + Dynamic Telemetry Inference</p>
+                        </div>
+                        <button id="btn-run-prediction" class="btn btn-primary" aria-label="Run Risk Prediction">
+                            <span class="btn-icon">⚡</span> Run Twin Forecast
+                        </button>
+                    </div>
+
+                    <!-- Active Prediction Display Box -->
+                    <div class="prediction-display-box" id="prediction-result-box">
+                        <div class="prediction-placeholder" id="prediction-empty-state">
+                            <div class="placeholder-icon">
+                                <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
+                                    <path d="M2 12h20"/>
+                                </svg>
+                            </div>
+                            <h3>No Active Forecast Generated</h3>
+                            <p>Click <strong>"Run Twin Forecast"</strong> to evaluate the patient's physiological trajectory and forecast glucose risk 45 minutes into the future.</p>
+                        </div>
+
+                        <!-- Unreliable Prediction State (Requirement 3 & 6) -->
+                        <div class="prediction-unreliable-box hidden" id="prediction-unreliable-state" role="alert">
+                            <div class="unreliable-header">
+                                <span class="unreliable-icon">⚠️</span>
+                                <strong class="unreliable-title">PREDICTION UNAVAILABLE &bull; UNRELIABLE DATA</strong>
+                            </div>
+                            <p class="unreliable-primary-message" id="unreliable-primary-message">
+                                Unable to provide a reliable prediction. Check the latest glucose reading and seek appropriate medical guidance.
+                            </p>
+                            <p class="unreliable-subtext" id="unreliable-reason-text">
+                                The input data is missing, invalid, outdated, or outside the model's supported physiological range (30–500 mg/dL). Predictions and confidence values cannot be fabricated.
+                            </p>
+                            <div class="unreliable-action-box">
+                                <span><strong>Next Action:</strong> Obtain a fresh blood glucose measurement with an approved glucometer/CGM and consult a qualified healthcare provider if readings or symptoms cause concern.</span>
+                            </div>
+                        </div>
+
+                        <!-- Active Prediction Content -->
+                        <div class="prediction-active-content hidden" id="prediction-active-state">
+                            <!-- Mandatory Safety Warning Near Every Prediction (Requirement 1) -->
+                            <div class="prediction-safety-warning-banner" role="alert">
+                                <span class="safety-icon">⚠️</span>
+                                <div class="safety-body">
+                                    <strong class="safety-heading">MANDATORY CLINICAL SAFETY WARNING:</strong>
+                                    <p class="safety-warning-text">
+                                        AI predictions are estimates, not guarantees. Actual glucose levels may change unexpectedly. Do not rely on this prediction alone for medical decisions.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Hypoglycemia Model Limitation Warning in Forecast Panel (Requirement 3) -->
+                            <div class="forecast-hypo-warning-banner" role="alert">
+                                <span class="hypo-warning-icon">ℹ️</span>
+                                <div class="hypo-warning-body">
+                                    <strong class="hypo-warning-title">MODEL LIMITATION:</strong>
+                                    <p class="forecast-hypo-warning-text" id="forecast-hypo-warning-text">
+                                        Hypoglycemia prediction is not supported by the current model.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Out-of-Target Caution Box (Requirement 4) -->
+                            <div class="current-caution-box hidden" id="pred-current-caution-box" role="alert">
+                                <span class="caution-icon">⚠️</span>
+                                <div class="caution-content">
+                                    <strong id="pred-caution-title">CAUTION: CURRENT READING OUTSIDE TARGET RANGE (70–180 mg/dL)</strong>
+                                    <p id="pred-caution-text">
+                                        Your current measured glucose is outside the target range. A reassuring AI forecast does NOT override your current reading or acute symptoms. Prioritize actual measurements.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Distinct Distinction: Actual Measured vs Predicted Range (Requirement 2 & 6) -->
+                            <div class="telemetry-contrast-grid">
+                                <div class="contrast-col contrast-measured">
+                                    <div class="contrast-badge">ACTUAL MEASURED READING</div>
+                                    <div class="contrast-val" id="pred-measured-glucose">-- mg/dL</div>
+                                    <div class="contrast-time" id="pred-measured-time">Latest: --</div>
+                                    <span id="pred-stale-badge" class="stale-badge-sm hidden">⚠️ OUTDATED</span>
+                                </div>
+                                <div class="contrast-arrow">➔</div>
+                                <div class="contrast-col contrast-forecast">
+                                    <div class="contrast-badge badge-forecast">AI FORWARD ESTIMATE (+45m)</div>
+                                    <div class="contrast-val text-accent" id="pred-forecast-range">Predicted glucose range</div>
+                                    <div class="contrast-time" id="pred-target-timestamp">Target: --</div>
+                                    <span class="estimate-note">Estimated trajectory &bull; Not a guarantee</span>
+                                </div>
+                            </div>
+
+                            <div class="prediction-result-header">
+                                <div class="risk-indicator-block">
+                                    <span class="risk-lead-text">Predicted Risk Classification:</span>
+                                    <div class="risk-badge-large" id="pred-risk-badge">Predicted In-Range Trajectory</div>
+                                </div>
+                            </div>
+
+                            <!-- Model-Estimated Class Probabilities -->
+                            <div class="probability-bars-container" aria-label="Model-Estimated Class Probabilities">
+                                <div class="prob-section-header">
+                                    <span class="prob-section-title">Model-Estimated Class Probabilities</span>
+                                    <span class="prob-badge-notice">Algorithmic Estimates &bull; Not Clinical Risk</span>
+                                </div>
+
+                                <!-- Class 1: Hypoglycemia Unsupported Box (Requirement 5) -->
+                                <div class="prob-row prob-row-unsupported">
+                                    <div class="prob-label-group">
+                                        <span class="unsupported-class-name">Hypoglycemia (&lt;70 mg/dL) Class 1:</span>
+                                        <span class="unsupported-tag-pill" id="prob-hypo-pill">NOT SUPPORTED</span>
+                                    </div>
+                                    <div class="unsupported-explanation-box">
+                                        <p class="unsupported-bold-statement" id="prob-hypo-statement">
+                                            Hypoglycemia prediction is not supported by the current model.
+                                        </p>
+                                        <p class="unsupported-detail-note" id="prob-hypo-detail">
+                                            The model has zero hypoglycemia training examples and cannot detect or rule out hypoglycemia. A 0% model output must never be displayed or interpreted as proof that hypoglycemia cannot happen.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Class 2: In-Range Trajectory -->
+                                <div class="prob-row">
+                                    <div class="prob-label-group">
+                                        <span>Predicted In-Range Trajectory (70–180 mg/dL)</span>
+                                        <span id="prob-val-inrange">0%</span>
+                                    </div>
+                                    <div class="prob-progress-track">
+                                        <div class="prob-progress-fill fill-inrange" id="prob-fill-inrange" style="width: 0%"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Class 3: Hyperglycemia Risk -->
+                                <div class="prob-row">
+                                    <div class="prob-label-group">
+                                        <span>Potential Hyperglycemia Risk (&gt;180 mg/dL)</span>
+                                        <span id="prob-val-hyper">0%</span>
+                                    </div>
+                                    <div class="prob-progress-track">
+                                        <div class="prob-progress-fill fill-hyper" id="prob-fill-hyper" style="width: 0%"></div>
+                                    </div>
+                                </div>
+
+                                <p class="prob-explanation-text">
+                                    Percentages represent model-estimated class probabilities, not clinical risk percentages. Outputs are based on synthetic data and are not clinically validated.
+                                </p>
+                            </div>
+
+                            <!-- False Reassurance Prevention Advisory (Requirement 2) -->
+                            <div class="reassurance-advisory-box">
+                                <span class="advisory-icon">ℹ️</span>
+                                <div class="advisory-content">
+                                    <strong>CLINICAL SAFETY PRINCIPLES:</strong>
+                                    <ul>
+                                        <li><strong>No Outcome Guarantee:</strong> AI forecasts are probabilistic estimates, not clinical certainties. Predicted glucose range reflects mathematical modeling, never a guarantee of recovery or outcome.</li>
+                                        <li><strong>Predicted Range vs Actuals:</strong> Predictions represent statistical trajectories (&plusmn;45m), not confirmed future events or actual measurements.</li>
+                                        <li><strong>Treatment Boundary:</strong> Never recommend, calculate, or adjust insulin doses, medication regimens, or treatment decisions based on this AI prototype.</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Contributing Physiological Factors -->
+                            <div class="factors-section">
+                                <h4 class="factors-title">Key Contributing Observed Factors (Past 30 Mins):</h4>
+                                <ul class="factors-list" id="pred-factors-list">
+                                    <!-- Populated dynamically -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Suggestions Panel (Rule-based, Non-clinical Guidance) -->
+                    <div class="suggestions-panel" id="suggestions-panel" aria-labelledby="suggestions-panel-title">
+                        <div class="suggestions-panel-header">
+                            <div class="suggestions-title-group">
+                                <span class="suggestions-icon">💡</span>
+                                <h3 id="suggestions-panel-title" class="suggestions-panel-title">General Wellness Suggestions</h3>
+                            </div>
+                            <span class="suggestions-badge" id="suggestions-badge">Non-Clinical Guidance</span>
+                        </div>
+
+                        <!-- Empty state before forecast -->
+                        <div class="suggestions-empty-state" id="suggestions-empty-state">
+                            <p class="suggestions-empty-text">Run a forecast to see general suggestions.</p>
+                        </div>
+
+                        <!-- Active Suggestions Content -->
+                        <div class="suggestions-active-state hidden" id="suggestions-active-state">
+                            <!-- Why Am I Seeing This? (real values only) -->
+                            <div class="suggestions-why-box" id="suggestions-why-box">
+                                <span class="why-icon">ℹ️</span>
+                                <span class="why-text" id="suggestions-why-text">--</span>
+                            </div>
+
+                            <!-- Suggestions List -->
+                            <ul class="suggestions-list" id="suggestions-list">
+                                <!-- Populated dynamically -->
+                            </ul>
+
+                            <!-- Escalation Line for Elevated Risk Classes -->
+                            <div class="suggestions-escalation-box hidden" id="suggestions-escalation-box" role="alert">
+                                <span class="escalation-icon">⚠️</span>
+                                <span class="escalation-text" id="suggestions-escalation-text">
+                                    If you feel unwell or symptoms worsen, contact a healthcare professional or local emergency services.
+                                </span>
+                            </div>
+
+                            <!-- Fixed Hypoglycemia Limitation Note (Every Class) -->
+                            <div class="suggestions-hypo-note-box">
+                                <span class="hypo-note-icon">ℹ️</span>
+                                <p class="suggestions-hypo-note-text" id="suggestions-hypo-note-text">
+                                    <strong>Hypoglycemia Notice:</strong> Low-glucose risk is not predicted by this prototype. A 0% probability does not mean hypoglycemia is impossible. If you experience symptoms such as shakiness, sweating, confusion, or dizziness, follow your clinician's guidance and seek medical help.
+                                </p>
+                            </div>
+
+                            <!-- Exact Synthetic Prototype Disclaimer (Every Class) -->
+                            <div class="suggestions-disclaimer-box">
+                                <p class="suggestions-disclaimer-text">
+                                    SYNTHETIC DATA — NOT CLINICALLY VALIDATED. This prototype must not be used for diagnosis, treatment, insulin dosing, or medical decisions.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- *** Download Prediction Report *** -->
+                    <div class="download-report-section" id="download-report-section">
+                        <div class="download-report-header">
+                            <span class="download-icon">⬇</span>
+                            <span class="download-title">Download Prediction Report</span>
+                        </div>
+                        <p class="download-subtitle">
+                            Export the currently selected patient's latest prediction — no new inference is triggered.
+                        </p>
+                        <div class="download-buttons-row">
+                            <button id="btn-download-csv" class="btn-download btn-download-csv" disabled>
+                                <span class="btn-download-icon">📄</span>
+                                <span class="btn-download-label">Download CSV</span>
+                            </button>
+                            <button id="btn-download-pdf" class="btn-download btn-download-pdf" disabled>
+                                <span class="btn-download-icon">📋</span>
+                                <span class="btn-download-label">Download PDF</span>
+                            </button>
+                        </div>
+                        <div id="report-download-status" class="report-download-status hidden" role="status" aria-live="polite"></div>
+                        <p class="download-no-prediction-note" id="download-no-prediction-note">
+                            Run a forecast first to enable report downloads.
+                        </p>
+                    </div>
+
+                    <!-- CRITICAL Model Limitation Notice: Hypoglycemia Unsupported -->
+                    <div class="limitation-callout-box" role="alert" aria-label="Hypoglycemia Limitation Warning">
+                        <div class="callout-header">
+                            <span class="callout-icon">⚠️</span>
+                            <strong id="callout-warning-title">CRITICAL MODEL LIMITATION: HYPOGLYCEMIA PREDICTION UNSUPPORTED</strong>
+                        </div>
+                        <p class="callout-warning-statement" id="callout-warning-statement">
+                            Hypoglycemia prediction is not supported by the current model. The model has zero hypoglycemia training examples and cannot predict Class 1. Do not use this prototype for medical decisions.
+                        </p>
+                        <p class="callout-text" id="callout-warning-detail">
+                            The underlying machine learning model was trained on synthetic development data with <strong>zero examples of hypoglycemia (&lt;70 mg/dL)</strong>. 
+                            This model <strong>CANNOT detect or rule out hypoglycemia</strong>. An "In-Range" prediction must never be interpreted as an absence of low blood sugar danger.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- Severe Symptoms & Emergency Action Protocol Card (Requirement 4) -->
+                <section class="card emergency-protocol-card" aria-labelledby="emergency-protocol-title">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <h2 id="emergency-protocol-title" class="card-title">Severe Symptoms &amp; Emergency Protocol</h2>
+                            <p class="card-subtitle">Immediate clinical safety override for acute situations</p>
+                        </div>
+                        <span class="protocol-badge">Safety Protocol</span>
+                    </div>
+                    <div class="emergency-card-body">
+                        <p class="emergency-card-prompt">
+                            If the patient reports or experiences severe symptoms (such as extreme confusion, severe shakiness, fainting, profuse sweating, nausea, rapid breathing, or seizure), immediate emergency action is required.
+                        </p>
+                        <div class="emergency-actions-row">
+                            <button type="button" class="btn btn-emergency" id="btn-report-severe-symptoms">
+                                🚨 Report Severe Symptoms / Emergency
+                            </button>
+                        </div>
+                        <div class="severe-symptoms-callout hidden" id="severe-symptoms-callout" role="alert">
+                            <div class="callout-emergency-header">
+                                <span class="callout-emergency-icon">🚨</span>
+                                <strong>SEEK EMERGENCY MEDICAL HELP IMMEDIATELY</strong>
+                            </div>
+                            <p class="callout-emergency-message">
+                                <strong>Call emergency services (911 / 112) or go to the nearest emergency room immediately.</strong>
+                            </p>
+                            <p class="callout-emergency-sub">
+                                <strong>CRITICAL RULE:</strong> Never allow a reassuring AI result to override dangerous symptoms or concerning actual readings. AI predictions are mathematical estimates and cannot monitor acute emergencies.
+                            </p>
+                            <button type="button" class="btn btn-secondary btn-sm" id="btn-dismiss-severe-symptoms">
+                                Dismiss Notice
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- What-If Counterfactual Simulation Panel -->
+                <section class="card whatif-card" aria-labelledby="whatif-title">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <h2 id="whatif-title" class="card-title">What-If Counterfactual Simulation</h2>
+                            <p class="card-subtitle">Non-destructive sensitivity analysis &bull; Preserves raw records</p>
+                        </div>
+                    </div>
+
+                    <form id="whatif-form" class="whatif-form-container">
+                        <!-- Preset Scenario Buttons -->
+                        <div class="preset-scenarios-row">
+                            <span class="preset-label">Quick Scenarios:</span>
+                            <button type="button" class="btn-preset" data-glucose="-15" data-steps="350" data-name="20-Min Post-Meal Walk">
+                                🚶 Post-Meal Walk
+                            </button>
+                            <button type="button" class="btn-preset" data-glucose="25" data-steps="0" data-name="High Carbohydrate Meal Surge">
+                                🍕 High Carb Meal
+                            </button>
+                            <button type="button" class="btn-preset" data-glucose="-30" data-steps="800" data-name="Intense Workout Activity">
+                                🏃 Intense Workout
+                            </button>
+                        </div>
+
+                        <!-- Controls Grid -->
+                        <div class="whatif-controls-grid">
+                            <div class="control-group">
+                                <div class="control-label-group">
+                                    <label for="whatif-glucose-slider">Hypothetical Glucose Delta</label>
+                                    <span class="control-live-val" id="whatif-glucose-val">0 mg/dL</span>
+                                </div>
+                                <input type="range" id="whatif-glucose-slider" min="-50" max="50" step="5" value="0" class="range-control">
+                                <span class="control-help">Shift current observation trajectory (mg/dL)</span>
+                            </div>
+
+                            <div class="control-group">
+                                <div class="control-label-group">
+                                    <label for="whatif-steps-slider">Hypothetical Additional Steps</label>
+                                    <span class="control-live-val" id="whatif-steps-val">0 steps</span>
+                                </div>
+                                <input type="range" id="whatif-steps-slider" min="0" max="1500" step="50" value="0" class="range-control">
+                                <span class="control-help">Simulate recent physical activity (steps in past 15m)</span>
+                            </div>
+                        </div>
+
+                        <div class="whatif-action-row">
+                            <input type="text" id="whatif-desc-input" class="text-input" value="Custom Activity Simulation" placeholder="Scenario name..." maxlength="80">
+                            <button type="submit" id="btn-run-whatif" class="btn btn-secondary">
+                                🧪 Run Simulation
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- What-If Comparison Results Box -->
+                    <div id="whatif-result-container" class="whatif-results-box hidden">
+                        <div class="comparison-grid">
+                            <div class="comparison-card card-observed">
+                                <span class="comparison-tag">Observed Baseline</span>
+                                <div class="comparison-glucose" id="whatif-obs-glucose">--</div>
+                                <div class="comparison-risk" id="whatif-obs-risk">In-Range</div>
+                            </div>
+                            <div class="comparison-arrow">➔</div>
+                            <div class="comparison-card card-hypothetical">
+                                <span class="comparison-tag tag-hypothetical">Hypothetical Result</span>
+                                <div class="comparison-glucose text-accent" id="whatif-hyp-glucose">--</div>
+                                <div class="comparison-risk" id="whatif-hyp-risk">--</div>
+                            </div>
+                        </div>
+                        <div class="simulation-alert-note" id="whatif-notice-text">
+                            HYPOTHETICAL SIMULATION NOTICE: This is an AI sensitivity query, not a medical or physiological guarantee.
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Prediction Audit Trail / History Card -->
+                <section class="card history-card" aria-labelledby="history-title">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <h2 id="history-title" class="card-title">Logged Prediction History</h2>
+                            <p class="card-subtitle">SQLite audit records for active patient</p>
+                        </div>
+                        <span class="history-count-badge" id="history-count-badge">0 logged</span>
+                    </div>
+
+                    <div class="history-table-wrapper">
+                        <table class="history-table" id="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Logged Time</th>
+                                    <th>Current Glucose</th>
+                                    <th>Forecast Risk</th>
+                                    <th>Horizon</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-table-body">
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">No predictions logged yet.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Global Footer -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <p><strong>TwinSense AI</strong> &bull; Student Innovation Challenge Prototype &bull; Pure Local Execution</p>
+            <p class="footer-disclaimer-statement">
+                TwinSense AI is an educational prototype using synthetic data. It has not been clinically validated and is not intended for diagnosis, treatment, or emergency monitoring.
+            </p>
+            <p class="footer-subtext">Built with Python, FastAPI, Scikit-learn, SQLite, and Vanilla JS. Deterministic Seed: 42. Not FDA or CE approved.</p>
+        </div>
+    </footer>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

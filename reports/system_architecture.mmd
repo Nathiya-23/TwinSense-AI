@@ -1,0 +1,123 @@
+%% TwinSense AI - End-to-End System Architecture Diagram
+%% Generated for Step 8: Architecture Documentation
+%% Fully local, zero external cloud dependencies, 100% synthetic data
+
+flowchart TB
+    %% =========================================================================
+    %% STYLING DIRECTIVES
+    %% =========================================================================
+    classDef offlineBox fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#f8fafc;
+    classDef runtimeBox fill:#0f172a,stroke:#06b6d4,stroke-width:2px,color:#f8fafc;
+    classDef dataStore fill:#334155,stroke:#94a3b8,stroke-width:1.5px,color:#f1f5f9;
+    classDef computeNode fill:#1e3a5f,stroke:#38bdf8,stroke-width:1.5px,color:#f8fafc;
+    classDef uiNode fill:#0d2847,stroke:#10b981,stroke-width:2px,color:#f8fafc;
+    classDef modelNode fill:#431407,stroke:#f97316,stroke-width:2px,color:#ffedd5;
+    classDef warningNode fill:#450a0a,stroke:#ef4444,stroke-width:2px,color:#fee2e2;
+
+    %% =========================================================================
+    %% SUBGRAPH 1: OFFLINE TRAINING & DATA PIPELINE
+    %% =========================================================================
+    subgraph OFFLINE_PIPELINE ["PHASE 1: OFFLINE DATA & TRAINING PIPELINE (BATCH EXECUTION)"]
+        direction TB
+
+        DGEN["Synthetic Data Generator<br/><code>src/data_generator.py</code><br/><i>Seed: 42, 10 Patients, 7 Days</i>"]:::computeNode
+        
+        subgraph RAW_DATA ["Raw Synthetic CSV Storage (Local Filesystem)"]
+            P_CSV[("<code>data/raw/patient_profiles.csv</code><br/>10 Synthetic Patients"):::dataStore]
+            G_CSV[("<code>data/raw/glucose_timeseries.csv</code><br/>20,160 Sensor Readings"):::dataStore]
+        end
+
+        FEAT_ENG["Feature Engineering Pipeline<br/><code>src/feature_engineering.py</code><br/><i>11 Past-Only Features, 45m Horizon</i>"]:::computeNode
+        
+        PROC_CSV[("<code>data/processed/training_dataset.csv</code><br/>20,020 Rows (Leak-Free)"):::dataStore]
+
+        TRAIN_SCRIPT["Model Training & Evaluation<br/><code>src/train.py</code><br/><i>Chronological Split + 45m Embargo</i>"]:::computeNode
+
+        subgraph TRAIN_OUTPUTS ["Persisted Model Artifacts & Evaluation"]
+            RF_MODEL[("Random Forest Classifier<br/><code>models/random_forest_risk_model.joblib</code><br/><i>100 Trees, Depth 8</i>"):::modelNode]
+            FEAT_JSON[("Feature Schema JSON<br/><code>models/feature_columns.json</code><br/><i>11 Enforced Predictors</i>"):::dataStore]
+            EVAL_REP[("Evaluation Reports<br/><code>reports/evaluation_report.md</code><br/><code>reports/model_evaluation.md</code>"):::dataStore]
+        end
+
+        DGEN -->|"Deterministic Generation"| P_CSV
+        DGEN -->|"Deterministic Generation"| G_CSV
+        P_CSV -->|"Join Baseline"| FEAT_ENG
+        G_CSV -->|"Rolling Windows"| FEAT_ENG
+        FEAT_ENG -->|"Export Processed"| PROC_CSV
+        PROC_CSV -->|"Train (80%) / Test (20%)"| TRAIN_SCRIPT
+        TRAIN_SCRIPT -->|"Serialize Model"| RF_MODEL
+        TRAIN_SCRIPT -->|"Export Schema"| FEAT_JSON
+        TRAIN_SCRIPT -->|"Log Metrics"| EVAL_REP
+    end
+
+    %% =========================================================================
+    %% SUBGRAPH 2: RUNTIME PREDICTION & SIMULATION PIPELINE
+    %% =========================================================================
+    subgraph RUNTIME_PIPELINE ["PHASE 2: RUNTIME PREDICTION & INTERACTIVE TWIN (LOCAL SERVER)"]
+        direction TB
+
+        subgraph FRONTEND ["Client Browser Interface (Vanilla Web Technologies)"]
+            DASH_UI["Interactive Dashboard<br/><code>app/static/index.html</code><br/><i>Navy/Teal Theme, SVG Glucose Chart</i>"]:::uiNode
+            DASH_JS["Client Controller<br/><code>app/static/app.js</code><br/><i>Relative API_BASE, No External CDN</i>"]:::uiNode
+            DASH_CSS["Responsive Styles<br/><code>app/static/style.css</code><br/><i>Modern Glassmorphism & Layout</i>"]:::uiNode
+        end
+
+        subgraph BACKEND ["FastAPI Backend (Local ASGI Server: Port 8000 / 8001)"]
+            direction TB
+            API_MAIN["FastAPI Application Core<br/><code>app/main.py</code><br/><i>Lifespan Manager, Static Serving</i>"]:::computeNode
+            API_ROUTER["REST API Endpoints<br/><code>/api/health</code> | <code>/api/patients</code><br/><code>/api/predict</code> | <code>/api/what-if</code>"]:::computeNode
+            API_SCHEMAS["Pydantic Schemas<br/><code>app/schemas.py</code><br/><i>Strict Request/Response Validation</i>"]:::computeNode
+            API_SERVICES["Database Services<br/><code>app/services.py</code><br/><i>Repository & Query Layer</i>"]:::computeNode
+        end
+
+        subgraph STORAGE ["Local Relational Store (SQLite)"]
+            SQLITE_DB[("Local SQLite Database<br/><code>data/twinsense.db</code><br/><i>Idempotent Seeding from CSVs</i>"):::dataStore]
+            TBL_PAT["Table: <code>patients</code>"]:::dataStore
+            TBL_READ["Table: <code>telemetry_readings</code>"]:::dataStore
+            TBL_PRED["Table: <code>predictions</code><br/><i>Historical Prediction Audit Log</i>"]:::dataStore
+        end
+
+        subgraph ENGINE ["TwinSense AI Engine Core (In-Memory Inference)"]
+            TWIN_CORE["TwinEngine Singleton<br/><code>src/twin_engine.py</code><br/><i>Past-Only Windowing & Verification</i>"]:::computeNode
+            WHAT_IF["What-If Counterfactual Simulator<br/><i>In-Memory Perturbation (Read-Only)</i>"]:::computeNode
+            SAFETY_GUARD["Clinical Safety Guardrails<br/><i>Hypoglycemia Zero-Prob Warning<br/>Synthetic Data Disclaimer Tagging</i>"]:::warningNode
+        end
+
+        %% Frontend connections
+        DASH_UI <--> DASH_JS
+        DASH_UI --- DASH_CSS
+        DASH_JS <==>|"HTTP / JSON (REST Requests)"| API_ROUTER
+
+        %% Backend routing & schemas
+        API_MAIN --> API_ROUTER
+        API_ROUTER --- API_SCHEMAS
+        API_ROUTER --> API_SERVICES
+
+        %% Services to SQLite
+        API_SERVICES <-->|"Query Patient Profiles & Telemetry"| SQLITE_DB
+        API_SERVICES -->|"Log Validated Predictions"| TBL_PRED
+        SQLITE_DB --- TBL_PAT
+        SQLITE_DB --- TBL_READ
+        SQLITE_DB --- TBL_PRED
+
+        %% CSV initial seed to SQLite (idempotent on startup)
+        P_CSV -.->|"Idempotent Init (INSERT OR IGNORE)"| SQLITE_DB
+        G_CSV -.->|"Idempotent Init (INSERT OR IGNORE)"| SQLITE_DB
+
+        %% Backend to Engine
+        API_ROUTER ==>|"Patient History & Baseline"| TWIN_CORE
+        API_ROUTER ==>|"Scenario Parameters"| WHAT_IF
+
+        %% Engine to Artifacts
+        FEAT_JSON ==>|"Feature Schema Validation"| TWIN_CORE
+        RF_MODEL ==>|"scikit-learn predict_proba()"| TWIN_CORE
+
+        %% Engine internal logic
+        TWIN_CORE --> WHAT_IF
+        TWIN_CORE --> SAFETY_GUARD
+        SAFETY_GUARD -->|"Verified Prediction Response"| API_ROUTER
+    end
+
+    %% Apply visual classes to major subgraphs
+    class OFFLINE_PIPELINE offlineBox;
+    class RUNTIME_PIPELINE runtimeBox;

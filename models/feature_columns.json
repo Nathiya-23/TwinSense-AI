@@ -1,0 +1,15 @@
+{
+  "feature_columns": [
+    "current_glucose_mg_dl",
+    "glucose_mean_past_15m",
+    "glucose_mean_past_30m",
+    "glucose_change_past_15m",
+    "heart_rate_mean_past_15m",
+    "steps_sum_past_15m",
+    "current_meal_event",
+    "age",
+    "bmi",
+    "baseline_hba1c",
+    "diabetes_duration_years"
+  ]
+}
